@@ -9,7 +9,7 @@ class buttonHandler(discord.ui.View):
         super().__init__(timeout = 60)
         self.message = None
 
-    @discord.ui.button(lable = "Default Emoji",
+    @discord.ui.button(label = "Default Emoji",
                        style = discord.ButtonStyle.success, 
                        emoji = "⬜")
     async def button1(self,
