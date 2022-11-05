@@ -30,7 +30,7 @@ class GenerateTimeString():
 
         return actual_hours, dt.minute, dt.second, am
 
-    def generate_string(self, time_info: tuple) -> str:
+    def generate_string(self, time_info: tuple, current_time: bool) -> str:
         final_string = ""
 
         for y in range(7):
@@ -59,11 +59,12 @@ class GenerateTimeString():
                 final_string += "🟩" if x else "⬛"
             final_string += "⬛⬛⬛"
 
-            indicator = "AM" if time_info[3] else "PM"
+            if current_time:
+                indicator = "AM" if time_info[3] else "PM"
 
-            for x in self.indicators[indicator][y]:
-                final_string += "⬜" if x else "⬛"
-            final_string += "⬛"
+                for x in self.indicators[indicator][y]:
+                    final_string += "⬜" if x else "⬛"
+                final_string += "⬛"
 
             final_string += "\n"
 
