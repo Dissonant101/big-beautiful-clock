@@ -1,0 +1,72 @@
+#Currently doesn't save the data
+
+
+import discord
+from discord.ext import tasks
+#from discord import app_commands 
+#from discord import option
+import interactions
+import pytz
+from datetime import datetime, timedelta
+import csv
+
+token = 'MTAzODMxNDY0MzA1MzA5Mjk0NQ.GaGciB.ziX1NGcMHftg8Pg6iM-FgP2aaO8exEzH16Mi5E' #change these var to yours
+guild_id = 1010397037424033942
+bot = interactions.Client(token)
+
+timezone = pytz.timezone("America/Vancouver")
+
+@bot.event #bot is online
+async def on_ready():
+    print(f"logged in")
+    
+@bot.command( #alarm slash command
+    name="alarm",
+    description="set an alarm",
+    scope=guild_id,
+    options = [
+        interactions.Option(
+            name="hour",
+            description="input hour in 24hr format",
+            type= 4, #interactions.OptionType.INTEGER
+            required=True,
+        ),
+        interactions.Option(
+            name="min",
+            description="input minutes",
+            type= 4, #interactions.OptionType.INTEGER
+            required=True,
+        ),
+        interactions.Option(
+            name="name",
+            description="what is this alarm for?",
+            type= 3, #interactions.OptionType.STRING
+            required=True,
+        ),
+    ], 
+)
+async def slash2(interaction: discord.Interaction):
+    await interaction.response.send_message(f"got it", ephemeral = True) #bot isn't responding here
+
+
+#Trying to save user input data below not working
+#@bot.event
+#async def on_alarm_create(alarmC):
+#    name = alarmC.name
+#    alarm_hour = alarmC.hour.astimezone(timezone).strftime('%m %d %H:%M')
+#    alarm_min = alarmC.min.astimezone(timezone).strftime('%m %d %H:%M')
+#    alarm_time = alarm_hour + ":" + alarm_min
+#    with open("data.csv", "alarms") as f:
+#        csv_writer = csv.writer(f, delimiter="~", lineterminator='\n')
+#        csv_writer.writerow([name, alarm_time])
+#    await print_scheduled_event(alarmC)
+#ignore for now
+
+@tasks.loop(seconds = 30) # checks if alarm time is reaching actual time
+async def check_time():
+    timediff = alarm_time.astimezone(timezone) - datetime.now().astimezone(timezone)
+    if timedelta(minutes=min) == diff < timedelta(minutes=min+1):
+        await interaction.response.send_message(f"riinng")
+
+check_time.start()
+bot.start()
