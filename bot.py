@@ -19,6 +19,7 @@ class CustomBotClient(commands.Bot):
         await self.load_extension("cogs.clock")
         await self.load_extension("cogs.timer")
         await self.load_extension("cogs.stopwatch")
+        await self.load_extension("cogs.create_alarm")
         await bot.tree.sync(guild=discord.Object(id=1038187258165067836))
 
     async def close(self):
