@@ -49,7 +49,6 @@ class GenerateTimeString():
             final_string += "⬛"
             for x in self.numbers[time_info[2] % 10][y]:
                 final_string += "🟩" if x else "⬛"
-            final_string += "⬛⬛⬛"
 
             final_string += "\n"
 
