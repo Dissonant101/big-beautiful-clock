@@ -37,15 +37,15 @@ class Alarms(commands.Cog):
     @app_commands.command(name="create_alarm", description="Creates an alarm!")
     @app_commands.describe(timezone="Timezone the alarm is set to")
     @app_commands.choices(timezone=time_zone_choices)
-    async def create_alarm(self, interaction: discord.Interaction, tz: app_commands.Choice[str]):
+    async def create_alarm(self, interaction: discord.Interaction, timezone: app_commands.Choice[str]):
         await interaction.response.defer()
         message = await interaction.followup.send(f"Creating alarm!")
         end_time = (datetime.now() + timedelta(seconds=5)
                     ).replace(microsecond=0).strftime("%m/%d/%Y, %H:%M:%S")
         await message.edit(content=("Alarm set for: " + end_time))
-        await self.bot.get_channel(self.bot.instances_channel).send(f"s {interaction.channel_id} {message.id} {end_time} {tz}")
+        await self.bot.get_channel(self.bot.instances_channel).send(f"s {interaction.channel_id} {message.id} {end_time} {timezone}")
         self.bot.instances["alarms"].append(
-            [interaction.channel_id, message.id, end_time, tz])
+            [interaction.channel_id, message.id, end_time, timezone])
 
     @tasks.loop(seconds=5)  # checks if alarm time is reaching actual time
     async def check_times(self):
@@ -66,6 +66,9 @@ class Alarms(commands.Cog):
     @check_times.before_loop
     async def before_check_times(self):
         await self.bot.wait_until_ready()
+
+async def setup(bot):
+    await bot.add_cog(Alarms(bot), guilds=[discord.Object(id=1038187258165067836)])
 
 
 # @bot.event  # bot is online

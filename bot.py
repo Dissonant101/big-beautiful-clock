@@ -17,9 +17,9 @@ class CustomBotClient(commands.Bot):
     async def setup_hook(self):
         self.session = aiohttp.ClientSession()
         await self.load_extension("cogs.clock")
-        await self.load_extension("cogs.timer")
-        await self.load_extension("cogs.stopwatch")
-        await self.load_extension("cogs.create_alarm")
+        await self.load_extension("cogs.timer1")
+        # await self.load_extension("cogs.stopwatch")
+        # await self.load_extension("cogs.create_alarm")
         await bot.tree.sync(guild=discord.Object(id=1038187258165067836))
 
     async def close(self):
@@ -31,14 +31,13 @@ class CustomBotClient(commands.Bot):
         async for message in self.get_channel(self.instances_channel).history():
             info = message.content.split()
             variant = info[0]
-            channel_id = info[1]
-            message_id = info[2]
-            channel_id, message_id = int(channel_id), int(message_id)
+            channel_id = int(info[1])
+            message_id = int(info[2])
             try:
                 await self.get_channel(channel_id).fetch_message(message_id)
                 if variant == "c":
                     self.instances["clocks"].append(
-                        (channel_id, message_id))
+                        (channel_id, message_id, info[3]))
                 elif variant == "t":
                     self.instances["timers"].append(
                         (channel_id, message_id))

@@ -15,9 +15,8 @@ class Timer(commands.Cog):
     def cog_unload(self):
         self.update_timer.cancel()
         
-        
     def countdown(self):
-        global t 
+        global t
 
         mins, secs = divmod(t, 60)
         hrs, mins = divmod(mins, 60)
@@ -27,27 +26,27 @@ class Timer(commands.Cog):
 
     @app_commands.command(name="create_timer", description="Creates a timer!")
     @app_commands.describe(t = "Enter time in seconds")
-
-    async def create_clock(self, t, interaction: discord.Interaction):
+    async def create_timer(self, interaction: discord.Interaction, t: int):
         try:
             t = int(t)
             await interaction.response.defer()
             message = await interaction.followup.send(f"Creating timer!")
             await message.edit(content=self.countdown())
             await self.bot.get_channel(self.bot.instances_channel).send(f"c {interaction.channel_id} {message.id}")
-            self.bot.instances["timer"].append([interaction.channel_id, message.id])
+            self.bot.instances["timers"].append([interaction.channel_id, message.id])
         except ValueError:
             await interaction.followup.send("Enter a numeric value")
     
+    @tasks.loop(seconds=5.0)
     async def update_timer(self):
-        for i in range(len(self.bot.instances["timer"])):
-            channel_id, message_id = self.bot.instances["timer"][i]
+        for i in range(len(self.bot.instances["timers"])):
+            channel_id, message_id = self.bot.instances["timers"][i]
             
             try:
                 message = await self.bot.get_channel(channel_id).fetch_message(message_id)
                 await message.edit(content=self.countdown())
             except:
-                self.bot.instances["timer"].pop(i)
+                self.bot.instances["timers"].pop(i)
             
             if t == 0:
                 break
