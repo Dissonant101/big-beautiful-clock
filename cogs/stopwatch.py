@@ -7,14 +7,15 @@ from helpers.generate_time import GenerateTimeString
 st_run = False
 
 class ButtonHandler(discord.ui.View):
-    if not st_run:
+
+    if st_run == False:
         @discord.ui.button(label="Start", style=discord.ButtonStyle.success)
         async def button1(self, interaction: discord.Interaction, button: discord.ui.Button):
             global st_run
             st_run = True
             await interaction.response.defer()
 
-    else:
+    elif  st_run == True:
         @discord.ui.button(label="Stop", style=discord.ButtonStyle.red)
         async def button2(self, interaction: discord.Interaction, button: discord.ui.Button):
             global st_run
