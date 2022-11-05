@@ -7,23 +7,19 @@ from helpers.generate_time import GenerateTimeString
 st_run = False
 
 class ButtonHandler(discord.ui.View):
-
     if not st_run:
         @discord.ui.button(label="Start", style=discord.ButtonStyle.success)
         async def button1(self, interaction: discord.Interaction, button: discord.ui.Button):
             global st_run
             st_run = True
-            # self.sw = StopWatches()
-            # self.sw.update_stopwatches.start()
+            await interaction.response.defer()
 
     else:
         @discord.ui.button(label="Stop", style=discord.ButtonStyle.red)
         async def button2(self, interaction: discord.Interaction, button: discord.ui.Button):
             global st_run
             st_run = False
-            await interaction.response.send_message(content="Stopwatched is paused")
-            # self.sw = StopWatches()
-            # self.sw.update_stopwatches.cancel()
+            await interaction.response.defer()
 
 
 class StopWatch():
@@ -63,6 +59,8 @@ class StopWatches(commands.Cog):
 
     @tasks.loop(seconds=2.0)
     async def update_stopwatches(self):
+        if not st_run:
+            return
         for i in range(len(self.bot.instances["stopwatches"])):
             channel_id, message_id = self.bot.instances["stopwatches"][i]
             message = await self.bot.get_channel(channel_id).fetch_message(message_id)
