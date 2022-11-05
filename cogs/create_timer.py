@@ -35,13 +35,14 @@ class Timer(commands.Cog):
         t.content.lower()
 
         t = await interaction.wait_for("message", check=check)
-        if type(t.content.lower()) == int:
+        try:
+            t = int(t.content.lower())
             await interaction.response.defer()
             message = await interaction.followup.send(f"Creating timer!")
             await message.edit(content=self.countdown())
             await self.bot.get_channel(self.bot.instances_channel).send(f"c {interaction.channel_id} {message.id}")
             self.bot.instances["timer"].append([interaction.channel_id, message.id])
-        else:
+        except ValueError:
             await interaction.followup.send("Enter a numeric value")
     
     @tasks.loop(seconds=2.0)
