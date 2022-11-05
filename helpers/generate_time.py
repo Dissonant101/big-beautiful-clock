@@ -20,7 +20,7 @@ class GenerateTimeString():
             "PM": [[False, False, False, False, False, False, False, False, False], [True, True, True, False, True, False, False, False, True], [True, False, True, False, True, True, False, True, True], [True, True, True, False, True, True, True, True, True], [True, False, False, False, True, False, True, False, True, ], [True, False, False, False, True, False, True, False, True, ], [False, False, False, False, False, False, False, False, False]]
         }
 
-    def parse_time_object(dt: datetime) -> tuple:
+    def parse_time_object(self, dt: datetime) -> tuple:
         am = True
         actual_hours = dt.hour
 
@@ -69,3 +69,8 @@ class GenerateTimeString():
             final_string += "\n"
 
         return final_string
+
+
+if __name__ == "__main__":
+    generator = GenerateTimeString()
+    print(generator.generate_string(generator.parse_time_object(datetime.now()), True))
