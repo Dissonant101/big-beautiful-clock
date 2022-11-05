@@ -15,6 +15,7 @@ class Timer(commands.Cog):
     def cog_unload(self):
         self.update_timer.cancel()
         
+        
     def countdown(self):
         global t 
 
@@ -25,17 +26,11 @@ class Timer(commands.Cog):
         return self.generator.generate_string(parsed_time)
 
     @app_commands.command(name="create_timer", description="Creates a timer!")
-    async def create_clock(self, interaction: discord.Interaction):
-        global t
+    @app_commands.describe(t = "Enter time in seconds")
 
-        await interaction.send(f"Enter time in seconds")
-        def check(t):
-         return t.author == interaction.author and t.channel == interaction.channel and \
-        t.content.lower()
-
-        t = await interaction.wait_for("message", check=check)
+    async def create_clock(self, t, interaction: discord.Interaction):
         try:
-            t = int(t.content.lower())
+            t = int(t)
             await interaction.response.defer()
             message = await interaction.followup.send(f"Creating timer!")
             await message.edit(content=self.countdown())
@@ -44,11 +39,18 @@ class Timer(commands.Cog):
         except ValueError:
             await interaction.followup.send("Enter a numeric value")
     
-    @tasks.loop(seconds=2.0)
     async def update_timer(self):
-        for channel_id, message_id in self.bot.instances["timer"]:
-            message = await self.bot.get_channel(channel_id).fetch_message(message_id)
-            await message.edit(content=self.countdown())
+        for i in range(len(self.bot.instances["timer"])):
+            channel_id, message_id = self.bot.instances["timer"][i]
+            
+            try:
+                message = await self.bot.get_channel(channel_id).fetch_message(message_id)
+                await message.edit(content=self.countdown())
+            except:
+                self.bot.instances["timer"].pop(i)
+            
+            if t == 0:
+                break
             
     @update_timer.before_loop
     async def before_update_timer(self):
