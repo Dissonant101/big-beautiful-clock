@@ -64,7 +64,7 @@ class Alarms(commands.Cog):
                 end_time, "%m/%d, %H:%M").replace(year=current_time.year, tzinfo=timezone)
             timediff = alarm_time - current_time
             if timediff.total_seconds() < 1:
-                await self.bot.get_channel(channel_id).send("AHHHHHHHHHHH")
+                await self.bot.get_channel(channel_id).send(f"AHHHHHHHHHHH, {alarm_time}, {current_time}, {timediff}, {timediff.total_seconds()}")
                 alarms_to_be_deleted.append(i)
         for i in range(len(alarms_to_be_deleted)):
             for j in range(i, len(alarms_to_be_deleted)):
