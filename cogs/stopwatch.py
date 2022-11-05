@@ -5,6 +5,29 @@ import datetime as dt
 from helpers.generate_time import GenerateTimeString
 
 
+class ButtonHandler(discord.ui.View):
+    def __init__(self):
+        super().__init__()
+        self.userAns = False
+
+    @discord.ui.button(label="Start", style=discord.ButtonStyle.success)
+    async def button1(self, interaction: discord.Interaction, button: discord.ui.Button):
+        self.userAns = True
+        await interaction.response.send_message(content="You clicked me!")
+
+    @discord.ui.button(label="Stop", style=discord.ButtonStyle.success)
+    async def button2(self, interaction: discord.Interaction, button: discord.ui.Button):
+        self.userAns = False
+        await interaction.response.send_message(content="You clicked me!")
+
+    async def checkrun(self):
+        if self.userAns == True:
+            run = True
+        else:
+            run = False 
+        return run 
+
+
 class StopWatch():
     def __init__(self) -> None:
         self.time = [0, 0, 0]
@@ -31,28 +54,32 @@ class StopWatches(commands.Cog):
     @app_commands.command(name="create_stopwatch", description="Creates a stopwatch!")
     async def create_stopwatch(self, interaction: discord.Interaction):
         await interaction.response.defer()
-        message = await interaction.followup.send(f"Loading stopwatch!")
+        B = ButtonHandler()
+        message = await interaction.followup.send(f"Loading stopwatch!", view=B)
         s = StopWatch()
+        
         await message.edit(content=self.generator.generate_string((s.time[0], s.time[1], s.time[2])))
         await self.bot.get_channel(self.bot.instances_channel).send(f"s {interaction.channel_id} {message.id}")
         self.bot.instances["stopwatches"].append(
             [interaction.channel_id, message.id])
         self.bot.times["stopwatches"].append(s)
 
-    @tasks.loop(seconds=2.0)
-    async def update_stopwatches(self):
-        for i in range(len(self.bot.instances["stopwatches"])):
-            channel_id, message_id = self.bot.instances["stopwatches"][i]
-            message = await self.bot.get_channel(channel_id).fetch_message(message_id)
+        @tasks.loop(seconds=2.0)
+        async def update_stopwatches(self):
+            Run_stopwatch = B.checkrun()
+            if Run_stopwatch  == True :
+                for i in range(len(self.bot.instances["stopwatches"])):
+                    channel_id, message_id = self.bot.instances["stopwatches"][i]
+                    message = await self.bot.get_channel(channel_id).fetch_message(message_id)
 
-            s = self.bot.times["stopwatches"][i]
-            s.updateTime(2)
+                    s = self.bot.times["stopwatches"][i]
+                    s.updateTime(2)
 
-            await message.edit(content=self.generator.generate_string((s.time[0], s.time[1], s.time[2])))
+                    await message.edit(content=self.generator.generate_string((s.time[0], s.time[1], s.time[2])))
 
-    @update_stopwatches.before_loop
-    async def before_update_stopwatches(self):
-        await self.bot.wait_until_ready()
+        @update_stopwatches.before_loop
+        async def before_update_stopwatches(self):
+            await self.bot.wait_until_ready()
 
 
 async def setup(bot):
