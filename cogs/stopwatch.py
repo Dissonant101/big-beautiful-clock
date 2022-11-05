@@ -13,8 +13,6 @@ class ButtonHandler(discord.ui.View):
         async def button1(self, interaction: discord.Interaction, button: discord.ui.Button):
             global st_run
             st_run = True
-            # self.sw = StopWatches()
-            # self.sw.update_stopwatches.start()
 
     elif  st_run == True:
         @discord.ui.button(label="Stop", style=discord.ButtonStyle.red)
@@ -22,8 +20,6 @@ class ButtonHandler(discord.ui.View):
             global st_run
             st_run = False
             await interaction.response.send_message(content="Stopwatched is paused")
-            # self.sw = StopWatches()
-            # self.sw.update_stopwatches.cancel()
 
 
 class StopWatch():
@@ -70,7 +66,7 @@ class StopWatches(commands.Cog):
             s = self.bot.times["stopwatches"][i]
             s.updateTime(2)
 
-            await message.edit(content=self.generator.generate_string((s.time[0], s.time[1], s.time[2])))
+            await message.edit(content=self.generator.generate_string((s.time[0], s.time[1], s.time[2])), view= self.B)
 
     @update_stopwatches.before_loop
     async def before_update_stopwatches(self):
