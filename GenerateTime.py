@@ -16,9 +16,8 @@ class GenerateTimeString():
             9: [[True, True, True, True], [True, False, False, True], [True, False, False, True], [True, True, True, True], [False, False, False, True], [False, False, False, True], [True, True, True, True]]
         }
         self.indicators = {
-            AM: [[False, False, False, False, False, False, False, False, False], [False, True, False, False, True, False, False, False, True], [True, False, True, False, True, True, False, True, True], [True, True, True, False, True, True, True, True, True], [True, False, True, False, True, False, True, False, True], [True, False, True, False, True, False, True, False, True], [False, False, False, False, False, False, False, False, False]],
-            PM: [[False, False, False, False, False, False, False, False, False], [True, True, True, False, True, False, False, False, True], [True, False, True, False, True, True, False, True, True], [True, True, True, False, True,
-                                                                                                                                                                                                          True, True, True, True], [True, False, False, False, True, False, True, False, True, ], [True, False, False, False, True, False, True, False, True, ], [False, False, False, False, False, False, False, False, False]]
+            "AM": [[False, False, False, False, False, False, False, False, False], [False, True, False, False, True, False, False, False, True], [True, False, True, False, True, True, False, True, True], [True, True, True, False, True, True, True, True, True], [True, False, True, False, True, False, True, False, True], [True, False, True, False, True, False, True, False, True], [False, False, False, False, False, False, False, False, False]],
+            "PM": [[False, False, False, False, False, False, False, False, False], [True, True, True, False, True, False, False, False, True], [True, False, True, False, True, True, False, True, True], [True, True, True, False, True, True, True, True, True], [True, False, False, False, True, False, True, False, True, ], [True, False, False, False, True, False, True, False, True, ], [False, False, False, False, False, False, False, False, False]]
         }
 
     def parse_time_object(dt: datetime) -> tuple:
@@ -58,6 +57,12 @@ class GenerateTimeString():
             final_string += "⬛"
             for x in self.numbers[time_info[2] % 10][y]:
                 final_string += "🟩" if x else "⬛"
+            final_string += "⬛⬛⬛"
+
+            indicator = "AM" if time_info[3] else "PM"
+
+            for x in self.indicators[indicator][y]:
+                final_string += "⬜" if x else "⬛"
             final_string += "⬛"
 
             final_string += "\n"
