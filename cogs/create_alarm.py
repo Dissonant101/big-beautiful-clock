@@ -47,8 +47,8 @@ class Alarms(commands.Cog):
         self.bot.instances["alarms"].append(
             [interaction.channel_id, message.id, end_time, tz])
 
-    @tasks.loop(seconds=30)  # checks if alarm time is reaching actual time
-    async def check_time(self):
+    @tasks.loop(seconds=5)  # checks if alarm time is reaching actual time
+    async def check_times(self):
         alarms_to_be_deleted = []
         for i in range(len(self.bot.instances["alarms"])):
             channel_id, message_id, end_time, tz = self.bot.instances["alarms"][i]
@@ -62,6 +62,10 @@ class Alarms(commands.Cog):
             for j in range(i, len(alarms_to_be_deleted)):
                 alarms_to_be_deleted[j] -= 1
             self.bot.instances["alarms"].pop(i)
+
+    @check_times.before_loop
+    async def before_check_times(self):
+        await self.bot.wait_until_ready()
 
 
 # @bot.event  # bot is online
