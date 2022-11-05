@@ -59,11 +59,12 @@ class Alarms(commands.Cog):
         for i in range(len(self.bot.instances["alarms"])):
             channel_id, message_id, end_time, tz = self.bot.instances["alarms"][i]
             timezone = pytz.timezone(tz)
+            current_time = datetime.now(timezone)
             alarm_time = datetime.strptime(
-                end_time, "%m/%d, %H:%M").replace(tzinfo=timezone)
-            timediff = alarm_time - datetime.now(timezone)
+                end_time, "%m/%d, %H:%M").replace(year=current_time.year, tzinfo=timezone)
+            timediff = alarm_time - current_time
             if timediff.total_seconds() < 1:
-                await self.bot.get_channel(channel_id).send("AHHHHHHHHHHH", alarm_time, datetime.now(timezone), timediff, timediff.total_seconds())
+                await self.bot.get_channel(channel_id).send("AHHHHHHHHHHH")
                 alarms_to_be_deleted.append(i)
         for i in range(len(alarms_to_be_deleted)):
             for j in range(i, len(alarms_to_be_deleted)):
