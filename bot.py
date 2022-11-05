@@ -8,6 +8,8 @@ from dotenv import load_dotenv
 class CustomBotClient(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix="$", intents=discord.Intents.all(), application_id=1038209909541589032)
+        self.instances_channel = 1038276557925531749
+        self.instances = []
     
     async def setup_hook(self):
         self.session = aiohttp.ClientSession()
@@ -20,6 +22,8 @@ class CustomBotClient(commands.Bot):
     
     async def on_ready(self):
         print(f"{self.user.name} is ready to rumble!")
+        async for msg in self.get_channel(self.instances_channel).history():
+            self.instances.append(int(msg.content))
 
 
 if __name__ == "__main__":
