@@ -8,20 +8,22 @@ st_run = False
 
 class ButtonHandler(discord.ui.View):
 
-    @discord.ui.button(label="Start", style=discord.ButtonStyle.success)
-    async def button1(self, interaction: discord.Interaction, button: discord.ui.Button):
-        global st_run
-        st_run = True
-        # self.sw = StopWatches()
-        # self.sw.update_stopwatches.start()
+    if not st_run:
+        @discord.ui.button(label="Start", style=discord.ButtonStyle.success)
+        async def button1(self, interaction: discord.Interaction, button: discord.ui.Button):
+            global st_run
+            st_run = True
+            # self.sw = StopWatches()
+            # self.sw.update_stopwatches.start()
 
-    @discord.ui.button(label="Stop", style=discord.ButtonStyle.success)
-    async def button2(self, interaction: discord.Interaction, button: discord.ui.Button):
-        global st_run
-        st_run = False
-        await interaction.response.send_message(content="Stopwatched is paused")
-        # self.sw = StopWatches()
-        # self.sw.update_stopwatches.cancel()
+    else:
+        @discord.ui.button(label="Stop", style=discord.ButtonStyle.red)
+        async def button2(self, interaction: discord.Interaction, button: discord.ui.Button):
+            global st_run
+            st_run = False
+            await interaction.response.send_message(content="Stopwatched is paused")
+            # self.sw = StopWatches()
+            # self.sw.update_stopwatches.cancel()
 
 
 class StopWatch():
