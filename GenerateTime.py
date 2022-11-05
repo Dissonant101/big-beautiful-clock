@@ -12,6 +12,10 @@ class GenerateTimeString():
             8: [[True, True, True, True], [True, False, False, True], [True, False, False, True], [True, True, True, True], [True, False, False, True], [True, False, False, True], [True, True, True, True]],
             9: [[True, True, True, True], [True, False, False, True], [True, False, False, True], [True, True, True, True], [False, False, False, True], [False, False, False, True], [True, True, True, True]]
         }
+        self.indicators = {
+            AM: [[False, False, False, False, False, False, False, False, False], [False, True, False, False, True, False, False, False, True], [True, False, True, False, True, True, False, True, True], [True, True, True, False, True, True ,True ,True ,True], [True, False, True, False, True, False, True, False, True], [True, False, True, False, True, False, True, False, True], [False, False, False, False, False, False, False, False, False]],
+            PM: [[False, False, False, False, False, False, False, False, False], [True, True, True, False, True, False, False, False, True], [True, False, True, False, True, True, False, True, True], [True, True, True, False, True, True, True, True, True], [True, False, False, False, True, False, True ,False ,True,], [True, False, False, False, True, False, True ,False ,True,], [False, False, False, False, False, False, False, False, False]]
+        }
 
     def parse_time_object():
         return
