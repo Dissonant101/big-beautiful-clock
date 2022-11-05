@@ -18,10 +18,8 @@ from helpers.generate_time import GenerateTimeString
 
 # timezone = pytz.timezone("America/Vancouver")
 time_zone_choices = [
-    app_commands.Choice(
-        name="Vancouver", value="America/Vancouver"),
-    app_commands.Choice(name="UTC", value="UTC"),
-    app_commands.Choice(name="EST", value="Canada/Eastern"),
+    app_commands.Choice(name="PST", value="Etc/GMT+8"),
+    app_commands.Choice(name="EST", value="Etc/GMT+5"),
 ]
 
 
