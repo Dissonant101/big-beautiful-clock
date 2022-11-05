@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 class GenerateTimeString():
     def __init__(self) -> None:
         self.numbers = {
-            0: [[True, True, True, True], [True, False, False, True], [True, False, False, True], [False, False, False, False], [True, False, False, True], [True, False, False, True], [True, True, True, True]],
+            0: [[True, True, True, True], [True, False, False, True], [True, False, False, True], [True, False, False, True], [True, False, False, True], [True, False, False, True], [True, True, True, True]],
             1: [[False, False, False, True], [False, False, False, True], [False, False, False, True], [False, False, False, True], [False, False, False, True], [False, False, False, True], [False, False, False, True]],
             2: [[True, True, True, True], [False, False, False, True], [False, False, False, True], [True, True, True, True], [True, False, False, False], [True, False, False, False], [True, True, True, True]],
             3: [[True, True, True, True], [False, False, False, True], [False, False, False, True], [True, True, True, True], [False, False, False, True], [False, False, False, True], [True, True, True, True]],
@@ -16,8 +16,9 @@ class GenerateTimeString():
             9: [[True, True, True, True], [True, False, False, True], [True, False, False, True], [True, True, True, True], [False, False, False, True], [False, False, False, True], [True, True, True, True]]
         }
         self.indicators = {
-            AM: [[False, False, False, False, False, False, False, False, False], [False, True, False, False, True, False, False, False, True], [True, False, True, False, True, True, False, True, True], [True, True, True, False, True, True ,True ,True ,True], [True, False, True, False, True, False, True, False, True], [True, False, True, False, True, False, True, False, True], [False, False, False, False, False, False, False, False, False]],
-            PM: [[False, False, False, False, False, False, False, False, False], [True, True, True, False, True, False, False, False, True], [True, False, True, False, True, True, False, True, True], [True, True, True, False, True, True, True, True, True], [True, False, False, False, True, False, True ,False ,True,], [True, False, False, False, True, False, True ,False ,True,], [False, False, False, False, False, False, False, False, False]]
+            AM: [[False, False, False, False, False, False, False, False, False], [False, True, False, False, True, False, False, False, True], [True, False, True, False, True, True, False, True, True], [True, True, True, False, True, True, True, True, True], [True, False, True, False, True, False, True, False, True], [True, False, True, False, True, False, True, False, True], [False, False, False, False, False, False, False, False, False]],
+            PM: [[False, False, False, False, False, False, False, False, False], [True, True, True, False, True, False, False, False, True], [True, False, True, False, True, True, False, True, True], [True, True, True, False, True,
+                                                                                                                                                                                                          True, True, True, True], [True, False, False, False, True, False, True, False, True, ], [True, False, False, False, True, False, True, False, True, ], [False, False, False, False, False, False, False, False, False]]
         }
 
     def parse_time_object(dt: datetime) -> tuple:
@@ -42,18 +43,23 @@ class GenerateTimeString():
             for x in self.numbers[time_info[0] % 10][y]:
                 final_string += "🟩" if x else "⬛"
 
-            final_string += "⬛⬜" if y == 1 or y == 5 else "⬛⬛"  # colons
+            final_string += "⬛⬜⬛" if y == 1 or y == 5 else "⬛⬛⬛"  # colons
 
             for x in self.numbers[time_info[1] // 10][y]:
                 final_string += "🟩" if x else "⬛"
+            final_string += "⬛"
             for x in self.numbers[time_info[1] % 10][y]:
                 final_string += "🟩" if x else "⬛"
 
-            final_string += "⬛⬜" if y == 1 or y == 5 else "⬛⬛"  # colons
+            final_string += "⬛⬜⬛" if y == 1 or y == 5 else "⬛⬛⬛"  # colons
 
             for x in self.numbers[time_info[2] // 10][y]:
                 final_string += "🟩" if x else "⬛"
+            final_string += "⬛"
             for x in self.numbers[time_info[2] % 10][y]:
                 final_string += "🟩" if x else "⬛"
+            final_string += "⬛"
 
-        return
+            final_string += "\n"
+
+        return final_string
