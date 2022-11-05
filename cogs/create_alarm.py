@@ -35,13 +35,17 @@ class Alarms(commands.Cog):
         self.check_times.cancel()
 
     @app_commands.command(name="create_alarm", description="Creates an alarm!")
+    @app_commands.describe(alarm_time="Format as \"MM/DD hh:mm\"")
     @app_commands.describe(timezone="Timezone the alarm is set to")
     @app_commands.choices(timezone=time_zone_choices)
-    async def create_alarm(self, interaction: discord.Interaction, timezone: app_commands.Choice[str]):
+    async def create_alarm(self, interaction: discord.Interaction, alarm_time: str, timezone: str):
         await interaction.response.defer()
+        month_day, hour_minutes = alarm_time.split()
+        month, day = month_day.split("/")
+        hour, minute = hour_minutes.split(":")
         message = await interaction.followup.send(f"Creating alarm!")
-        end_time = (datetime.now() + timedelta(seconds=5)
-                    ).replace(microsecond=0).strftime("%m/%d/%Y, %H:%M:%S")
+        end_time = datetime(datetime.now().year, month, day, hour, minute).replace(
+            microsecond=0).strftime("%m/%d, %H:%M")
         await message.edit(content=("Alarm set for: " + end_time))
         await self.bot.get_channel(self.bot.instances_channel).send(f"s {interaction.channel_id} {message.id} {end_time} {timezone}")
         self.bot.instances["alarms"].append(
@@ -52,7 +56,7 @@ class Alarms(commands.Cog):
         alarms_to_be_deleted = []
         for i in range(len(self.bot.instances["alarms"])):
             channel_id, message_id, end_time, tz = self.bot.instances["alarms"][i]
-            alarm_time = datetime.strptime(end_time, "%m/%d/%Y, %H:%M:%S")
+            alarm_time = datetime.strptime(end_time, "%m/%d, %H:%M")
             timediff = alarm_time.astimezone(
                 tz) - datetime.now().astimezone(tz)
             if timediff.total_seconds() < 1:
@@ -66,6 +70,7 @@ class Alarms(commands.Cog):
     @check_times.before_loop
     async def before_check_times(self):
         await self.bot.wait_until_ready()
+
 
 async def setup(bot):
     await bot.add_cog(Alarms(bot), guilds=[discord.Object(id=1038187258165067836)])
