@@ -29,10 +29,10 @@ class Alarms(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.generator = GenerateTimeString()
-        self.update_alarms.start()
+        self.check_times.start()
 
     def cog_unload(self):
-        self.update_alarms.cancel()
+        self.check_times.cancel()
 
     @app_commands.command(name="create_alarm", description="Creates an alarm!")
     @app_commands.describe(timezone="Timezone the alarm is set to")
