@@ -9,7 +9,7 @@ class CustomBotClient(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix="$", intents=discord.Intents.all(), application_id=1038209909541589032)
         self.instances_channel = 1038276557925531749
-        self.instances = []
+        self.instances = {"clocks": [], "timers": [], "stopwatches": []}
     
     async def setup_hook(self):
         self.session = aiohttp.ClientSession()
@@ -22,8 +22,14 @@ class CustomBotClient(commands.Bot):
     
     async def on_ready(self):
         print(f"{self.user.name} is ready to rumble!")
-        async for msg in self.get_channel(self.instances_channel).history():
-            self.instances.append(int(msg.content))
+        async for message in self.get_channel(self.instances_channel).history():
+            message_data = message.content.split()
+            if message_data[0] == "c":
+                self.instances["clocks"].append((int(message_data[1]), int(message_data[2])))
+            elif message_data[0] == "t":
+                self.instances["timers"].append((int(message_data[1]), int(message_data[2])))
+            elif message_data[0] == "s":
+                self.instances["stopwatches"].append((int(message_data[1]), int(message_data[2])))
 
 
 if __name__ == "__main__":
