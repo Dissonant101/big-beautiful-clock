@@ -4,7 +4,6 @@ import aiohttp
 import os
 from dotenv import load_dotenv
 
-
 class CustomBotClient(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix="$", intents=discord.Intents.all(),
@@ -15,9 +14,9 @@ class CustomBotClient(commands.Bot):
 
     async def setup_hook(self):
         self.session = aiohttp.ClientSession()
-        await self.load_extension("cogs.create_clock")
-        await self.load_extension("cogs.create_timer")
-        await self.load_extension("cogs.create_stopwatch")
+        await self.load_extension("cogs.clock")
+        await self.load_extension("cogs.timer")
+        await self.load_extension("cogs.stopwatch")
         await bot.tree.sync(guild=discord.Object(id=1038187258165067836))
 
     async def close(self):
@@ -42,7 +41,6 @@ class CustomBotClient(commands.Bot):
                         (channel_id, message_id))
             except:
                 await message.delete()
-                
 
 
 if __name__ == "__main__":

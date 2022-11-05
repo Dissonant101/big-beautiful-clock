@@ -3,6 +3,7 @@ from discord import app_commands
 from discord.ext import commands, tasks
 import datetime as dt
 from helpers.generate_time import GenerateTimeString
+import pytz
 
 
 class Clock(commands.Cog):
@@ -15,11 +16,13 @@ class Clock(commands.Cog):
         self.update_clocks.cancel()
         
     def get_current_time_string(self):
-        parsed_time = self.generator.parse_time_object(dt.datetime.now())
+        parsed_time = self.generator.parse_time_object(dt.datetime.now(pytz.utc))
         return self.generator.generate_string(parsed_time)
 
     @app_commands.command(name="create_clock", description="Creates a clock!")
-    async def create_clock(self, interaction: discord.Interaction):
+    @app_commands.describe(timezone="Your timezone")
+    @app_commands.choices(timezone=app_commands.Choice(name="blah", value=123))
+    async def create_clock(self, interaction: discord.Interaction, timezone: int):
         await interaction.response.defer()
         message = await interaction.followup.send(f"Loading clock!")
         await message.edit(content=self.get_current_time_string())
