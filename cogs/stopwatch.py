@@ -69,7 +69,7 @@ class StopWatches(commands.Cog):
             s = self.bot.times["stopwatches"][i]
             s.updateTime(2)
 
-            await message.edit(content=self.generator.generate_string((s.time[0], s.time[1], s.time[2])))
+            await message.edit(content=self.generator.generate_string((s.time[0], s.time[1], s.time[2])), view= self.B)
 
     @update_stopwatches.before_loop
     async def before_update_stopwatches(self):
