@@ -21,8 +21,7 @@ class Timer(commands.Cog):
         mins, secs = divmod(t, 60)
         hrs, mins = divmod(mins, 60)
         parsed_time = self.generator.parse_time_object((hrs,mins,secs))
-        time.sleep(1)
-        t -= 1
+        t -= 2
         return self.generator.generate_string(parsed_time)
 
     @app_commands.command(name="create_timer", description="Creates a timer!")
