@@ -4,12 +4,14 @@ import aiohttp
 import os
 from dotenv import load_dotenv
 
+
 class CustomBotClient(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix="$", intents=discord.Intents.all(),
                          application_id=1038209909541589032)
         self.instances_channel = 1038276557925531749
-        self.instances = {"clocks": [], "timers": [], "stopwatches": []}
+        self.instances = {"clocks": [], "timers": [],
+                          "stopwatches": [], "alarms": []}
         self.times = {"stopwatches": [], "timers": []}
 
     async def setup_hook(self):
@@ -17,6 +19,7 @@ class CustomBotClient(commands.Bot):
         await self.load_extension("cogs.clock")
         await self.load_extension("cogs.timer")
         await self.load_extension("cogs.stopwatch")
+        await self.load_extension("cogs.create_alarm")
         await bot.tree.sync(guild=discord.Object(id=1038187258165067836))
 
     async def close(self):
@@ -26,7 +29,10 @@ class CustomBotClient(commands.Bot):
     async def on_ready(self):
         print(f"{self.user.name} is ready to rumble!")
         async for message in self.get_channel(self.instances_channel).history():
-            variant, channel_id, message_id = message.content.split()
+            info = message.content.split()
+            variant = info[0]
+            channel_id = info[1]
+            message_id = info[2]
             channel_id, message_id = int(channel_id), int(message_id)
             try:
                 await self.get_channel(channel_id).fetch_message(message_id)
@@ -39,6 +45,10 @@ class CustomBotClient(commands.Bot):
                 elif variant == "s":
                     self.instances["stopwatches"].append(
                         (channel_id, message_id))
+                elif variant == "a":
+                    self.instances["alarms"].append(
+                        (channel_id, message_id, info[3], info[4])
+                    )
             except:
                 await message.delete()
 
