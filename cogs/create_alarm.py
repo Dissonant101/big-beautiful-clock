@@ -43,6 +43,10 @@ class Alarms(commands.Cog):
         month_day, hour_minutes = alarm_time.split()
         month, day = month_day.split("/")
         hour, minute = hour_minutes.split(":")
+        month = int(month)
+        day = int(day)
+        hour = int(hour)
+        minute = int(minute)
         message = await interaction.followup.send(f"Creating alarm!")
         end_time = datetime(datetime.now().year, month, day, hour, minute).replace(
             microsecond=0).strftime("%m/%d, %H:%M")
