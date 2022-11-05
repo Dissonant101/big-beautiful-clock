@@ -6,7 +6,11 @@ from helpers.generate_time import GenerateTimeString
 
 
 class ButtonHandler(discord.ui.View):
-    @discord.ui.button(label="Default Emoji", style=discord.ButtonStyle.primary)
+    @discord.ui.button(label="Resume", style=discord.ButtonStyle.primary)
+    async def button1(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.send_message(content="You clicked me!")
+    
+    @discord.ui.button(label="Pause", style=discord.ButtonStyle.primary)
     async def button1(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.send_message(content="You clicked me!")
 

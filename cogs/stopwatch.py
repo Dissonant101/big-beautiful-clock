@@ -13,13 +13,14 @@ class ButtonHandler(discord.ui.View):
         async def button1(self, interaction: discord.Interaction, button: discord.ui.Button):
             global st_run
             st_run = True
+            await interaction.response.defer()
 
     elif  st_run == True:
         @discord.ui.button(label="Stop", style=discord.ButtonStyle.red)
         async def button2(self, interaction: discord.Interaction, button: discord.ui.Button):
             global st_run
             st_run = False
-            await interaction.response.send_message(content="Stopwatched is paused")
+            await interaction.response.defer()
 
 
 class StopWatch():
@@ -59,6 +60,8 @@ class StopWatches(commands.Cog):
 
     @tasks.loop(seconds=2.0)
     async def update_stopwatches(self):
+        if not st_run:
+            return
         for i in range(len(self.bot.instances["stopwatches"])):
             channel_id, message_id = self.bot.instances["stopwatches"][i]
             message = await self.bot.get_channel(channel_id).fetch_message(message_id)
