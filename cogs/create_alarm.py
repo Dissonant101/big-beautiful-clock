@@ -57,6 +57,7 @@ class Alarms(commands.Cog):
 
     @tasks.loop(seconds=5)  # checks if alarm time is reaching actual time
     async def check_times(self):
+        print("the function is called")
         alarms_to_be_deleted = []
         for i in range(len(self.bot.instances["alarms"])):
             channel_id, message_id, end_time, tz = self.bot.instances["alarms"][i]
@@ -64,7 +65,9 @@ class Alarms(commands.Cog):
             timezone = pytz.timezone(tz)
             timediff = alarm_time.astimezone(
                 timezone) - datetime.now().astimezone(timezone)
+            print("timediff:", timediff.total_seconds())
             if timediff.total_seconds() < 1:
+                print("it shuold have sent a message here")
                 await self.bot.get_channel(channel_id).send("AHHHHHHHHHHH")
                 alarms_to_be_deleted.append(i)
         for i in range(len(alarms_to_be_deleted)):
