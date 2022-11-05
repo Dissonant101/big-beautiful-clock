@@ -31,7 +31,7 @@ class StopWatches(commands.Cog):
     @app_commands.command(name="create_stopwatch", description="Creates a stopwatch!")
     async def create_stopwatch(self, interaction: discord.Interaction):
         await interaction.response.defer()
-        message = await interaction.followup.send(f"Creating stopwatch!")
+        message = await interaction.followup.send(f"Loading stopwatch!")
         s = StopWatch()
         await message.edit(content=self.generator.generate_string((s.time[0], s.time[1], s.time[2])))
         await self.bot.get_channel(self.bot.instances_channel).send(f"s {interaction.channel_id} {message.id}")
