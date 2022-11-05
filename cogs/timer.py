@@ -19,6 +19,7 @@ class Timer(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.generator = GenerateTimeString()
+        self.timers = {"active": set(), "inactive": set()}
         self.update_timers.start()
 
     def cog_unload(self):
@@ -29,7 +30,14 @@ class Timer(commands.Cog):
         return self.generator.generate_string(parsed_time)
 
     @app_commands.command(name="create_timer", description="Creates a timer!")
-    async def create_timer(self, interaction: discord.Interaction):
+    @app_commands.describe(days="Number of days", hours="Number of hours", minutes="Number of minutes", seconds="Number of seconds")
+    async def create_timer(self, interaction: discord.Interaction, days: str, hours: str, minutes: str, seconds: str):
+        days, hours, minutes, seconds = int(days), int(hours), int(minutes), int(seconds)
+        initial_duration = dt.timedelta(days=days, hours=hours, minutes=minutes, seconds=seconds)
+        elapsed_time = dt.timedelta()
+        now = dt.datetime.now()
+        self.timers["active"].add((initial_duration, elapsed_time, now))
+        
         await interaction.response.defer()
         message = await interaction.followup.send(f"Loading timer!", view=ButtonHandler())
         await message.edit(content=self.get_current_time_string())
