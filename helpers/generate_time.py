@@ -15,10 +15,18 @@ class GenerateTimeString():
             8: [[True, True, True], [True, False, True], [True, False, True], [True, True, True], [True, False, True], [True, False, True], [True, True, True]],
             9: [[True, True, True], [True, False, True], [True, False, True], [True, True, True], [False, False, True], [False, False, True], [True, True, True]]
         }
+        self.days = [[[True, True, False], [True, False, True], [True, False, True], [True, False, True], [True, False, True], [True, False, True], [True, True, False]],
+                     [[False, True, True, False], [True, False, False, True], [True, False, False, True], [
+                         True, True, True, True], [True, False, False, True], [True, False, False, True], [True, False, False, True]],
+                     [[True, False, True], [True, False, True], [True, False, True], [False, True, False], [
+                         False, True, False], [False, True, False], [False, True, False]],
+                     [[True, True, True], [True, False, False], [True, False, False], [
+                         True, True, True], [False, False, True], [False, False, True], [True, True, True]]
+                     ]
 
     def parse_time_object(self, dt: datetime) -> tuple:
         return dt.hour, dt.minute, dt.second
-    
+
     def parse_delta_object(self, td: timedelta) -> tuple:
         return td.days * 24, td.seconds // 60, td.seconds % 60
 
@@ -49,6 +57,25 @@ class GenerateTimeString():
                 final_string += "🟩" if x else "⬛"
 
             final_string += "\n"
+
+        return final_string
+
+    def generate_day_string(self, num_days: int) -> str:
+        final_string = ""
+
+        for y in range(7):
+            final_string += "⬛"
+
+            for x in self.numbers[num_days][y]:
+                final_string += "🟩" if x else "⬛"
+            final_string += "⬛"
+
+            for letter in self.days:
+                for x1 in letter[y]:
+                    final_string += "🟩" if x else "⬛"
+                final_string += "⬛"
+
+            final_string += "⬛\n"
 
         return final_string
 
