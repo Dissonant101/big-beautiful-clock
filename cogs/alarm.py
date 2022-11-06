@@ -73,7 +73,7 @@ class Alarms(commands.Cog):
         # self.generator.generate_string(time_difference[1])
         await self.bot.get_channel(self.bot.instances_channel).send(f"s {interaction.channel_id} {message1.id} {end_time} {timezone} {description}")
         self.bot.instances["alarms"].append(
-            [interaction.channel_id, message1.id, end_time, timezone, description, message2.id])
+            [interaction.channel_id, message1.id, end_time, timezone, description, None if message2 is None else message2.id])
 
     @staticmethod
     def check_time_difference(t1: datetime, t2: datetime) -> bool:
