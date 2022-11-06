@@ -56,7 +56,7 @@ class Alarms(commands.Cog):
         end_date_time = datetime(datetime.now().year, month, day, hour, minute)
         end_time = end_date_time.replace(
             microsecond=0).strftime("%m/%d, %H:%M")
-        time_difference = self.get_time_difference(end_date_time)
+        time_difference = self.get_time_difference(end_date_time, datetime.now())
         await message.edit(content=(f"Alarm set for: {end_time}, {tzs[timezone]}\n" + self.generator.generate_string(time_difference[1])))
         await self.bot.get_channel(self.bot.instances_channel).send(f"s {interaction.channel_id} {message.id} {end_time} {timezone} {description}")
         self.bot.instances["alarms"].append(
@@ -110,7 +110,7 @@ class Alarms(commands.Cog):
                 alarms_to_be_deleted.append(i)
             else:
                 if self.count % 3 == 0:
-                    self.count_down_alarm(channel_id, message_id, alarm_time, len(
+                    await self.count_down_alarm(channel_id, message_id, alarm_time, len(
                         description), timezone, current_time)
         for i in range(len(alarms_to_be_deleted)):
             for j in range(i, len(alarms_to_be_deleted)):
