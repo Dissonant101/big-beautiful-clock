@@ -23,7 +23,7 @@ time_zone_choices = [
 ]
 
 tzs = {
-    "Etc/GMT+4": "EST",
+    "Etc/GMT+5": "EST",
     "Etc/GMT+8": "PST"
 }
 
@@ -69,7 +69,7 @@ class Alarms(commands.Cog):
             msg_1_content += self.generator.generate_string(time_difference[1])
         await message1.edit(content=(msg_1_content))
         if time_difference[0] > 0:
-            message2 = await interaction.followup.send(msg_2_content)
+            message2 = await self.bot.get_channel(interaction.channel).send(msg_2_content)
         # self.generator.generate_string(time_difference[1])
         await self.bot.get_channel(self.bot.instances_channel).send(f"s {interaction.channel_id} {message1.id} {end_time} {timezone} {description}")
         self.bot.instances["alarms"].append(
@@ -160,53 +160,6 @@ class Alarms(commands.Cog):
     async def before_check_times(self):
         await self.bot.wait_until_ready()
 
-    # change to 00 at the end
-    # len of "alarm set for asdfsdfa"
-
 
 async def setup(bot):
     await bot.add_cog(Alarms(bot), guilds=[discord.Object(id=1038187258165067836)])
-
-
-# @bot.event  # bot is online
-# async def on_ready():
-#     print(f"logged in")
-
-
-# @bot.command(  # alarm slash command
-#     name="alarm",
-#     description="set an alarm",
-#     scope=guild_id,
-#     options=[
-#         interactions.Option(
-#             name="hour",
-#             description="input hour in 24hr format",
-#             type=4,  # interactions.OptionType.INTEGER
-#             required=True,
-#         ),
-#         interactions.Option(
-#             name="min",
-#             description="input minutes",
-#             type=4,  # interactions.OptionType.INTEGER
-#             required=True,
-#         ),
-#         interactions.Option(
-#             name="name",
-#             description="what is this alarm for?",
-#             type=3,  # interactions.OptionType.STRING
-#             required=True,
-#         ),
-#     ]
-# )
-# Trying to save user input data below not working
-# @bot.event
-# async def on_alarm_create(alarmC):
-#    name = alarmC.name
-#    alarm_hour = alarmC.hour.astimezone(timezone).strftime('%m %d %H:%M')
-#    alarm_min = alarmC.min.astimezone(timezone).strftime('%m %d %H:%M')
-#    alarm_time = alarm_hour + ":" + alarm_min
-#    with open("data.csv", "alarms") as f:
-#        csv_writer = csv.writer(f, delimiter="~", lineterminator='\n')
-#        csv_writer.writerow([name, alarm_time])
-#    await print_scheduled_event(alarmC)
-# ignore for now

@@ -66,21 +66,23 @@ class GenerateTimeString():
         for y in range(7):
             final_string += "⬛"
 
-            for x in self.numbers[num_days][y]:
+            for x in self.numbers[num_days // 10][y]:
                 final_string += "🟩" if x else "⬛"
             final_string += "⬛"
+            for x in self.numbers[num_days % 10][y]:
+                final_string += "🟩" if x else "⬛"
+            final_string += "⬛⬛⬛"
 
             for letter in self.days:
                 for x1 in letter[y]:
-                    final_string += "🟩" if x else "⬛"
+                    final_string += "🟩" if x1 else "⬛"
                 final_string += "⬛"
 
-            final_string += "⬛\n"
+            final_string += "\n"
 
         return final_string
 
 
 if __name__ == "__main__":
     generator = GenerateTimeString()
-    print(generator.generate_string(
-        generator.parse_time_object(datetime.now())))
+    print(generator.generate_day_string(15))
