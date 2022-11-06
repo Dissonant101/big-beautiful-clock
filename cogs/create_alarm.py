@@ -18,8 +18,8 @@ from helpers.generate_time import GenerateTimeString
 
 # timezone = pytz.timezone("America/Vancouver")
 time_zone_choices = [
-    app_commands.Choice(name="PST", value="Etc/GMT+8"),
-    app_commands.Choice(name="EST", value="Etc/GMT+5"),
+    app_commands.Choice(name="PST", value="Etc/GMT-8"),
+    app_commands.Choice(name="EST", value="Etc/GMT-5"),
 ]
 
 
@@ -48,7 +48,7 @@ class Alarms(commands.Cog):
         message = await interaction.followup.send(f"Creating alarm!")
         end_time = datetime(datetime.now().year, month, day, hour, minute).replace(
             microsecond=0).strftime("%m/%d, %H:%M")
-        await message.edit(content=("Alarm set for: " + end_time))
+        await message.edit(content=(f"Alarm set for: {end_time}, {timezone}"))
         await self.bot.get_channel(self.bot.instances_channel).send(f"s {interaction.channel_id} {message.id} {end_time} {timezone}")
         self.bot.instances["alarms"].append(
             [interaction.channel_id, message.id, end_time, timezone])
