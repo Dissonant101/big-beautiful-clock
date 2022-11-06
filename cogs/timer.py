@@ -24,8 +24,6 @@ class ButtonHandler(discord.ui.View):
         except:
             pass
         finally:
-            print(self.active_timers)
-            print(self.inactive_timers)
             await interaction.response.defer()
     
     @discord.ui.button(style=discord.ButtonStyle.red, emoji="<:pausebutton:1038624262820474900>")
@@ -37,8 +35,6 @@ class ButtonHandler(discord.ui.View):
         except:
             pass
         finally:
-            print(self.active_timers)
-            print(self.inactive_timers)
             await interaction.response.defer()            
             
 class Timer(commands.Cog):       
