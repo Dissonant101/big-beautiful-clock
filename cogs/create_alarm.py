@@ -35,8 +35,9 @@ class Alarms(commands.Cog):
     @app_commands.command(name="create_alarm", description="Creates an alarm!")
     @app_commands.describe(alarm_time="Format as \"MM/DD hh:mm\"")
     @app_commands.describe(timezone="Timezone the alarm is set to")
+    @app_commands.describe(description="Alarm title")
     @app_commands.choices(timezone=time_zone_choices)
-    async def create_alarm(self, interaction: discord.Interaction, alarm_time: str, timezone: str):
+    async def create_alarm(self, interaction: discord.Interaction, alarm_time: str, timezone: str, description: str):
         await interaction.response.defer()
         month_day, hour_minutes = alarm_time.split()
         month, day = month_day.split("/")
@@ -49,9 +50,9 @@ class Alarms(commands.Cog):
         end_time = datetime(datetime.now().year, month, day, hour, minute).replace(
             microsecond=0).strftime("%m/%d, %H:%M")
         await message.edit(content=(f"Alarm set for: {end_time}, {timezone}"))
-        await self.bot.get_channel(self.bot.instances_channel).send(f"s {interaction.channel_id} {message.id} {end_time} {timezone}")
+        await self.bot.get_channel(self.bot.instances_channel).send(f"s {interaction.channel_id} {message.id} {end_time} {timezone} {description}")
         self.bot.instances["alarms"].append(
-            [interaction.channel_id, message.id, end_time, timezone])
+            [interaction.channel_id, message.id, end_time, timezone, description])
 
     def check_time_difference(t1: datetime, t2: datetime) -> bool:
         if t1.month == t2. month and t1.day == t2.day:
@@ -71,14 +72,13 @@ class Alarms(commands.Cog):
     async def check_times(self):
         alarms_to_be_deleted = []
         for i in range(len(self.bot.instances["alarms"])):
-            channel_id, message_id, end_time, tz = self.bot.instances["alarms"][i]
+            channel_id, message_id, end_time, tz, description = self.bot.instances["alarms"][i]
             timezone = pytz.timezone(tz)
             current_time = datetime.now(timezone)
             alarm_time = datetime.strptime(
                 end_time, "%m/%d, %H:%M").replace(year=current_time.year, tzinfo=timezone)
-            timediff = alarm_time - current_time
             if self.check_time_difference(alarm_time, current_time):
-                await self.bot.get_channel(channel_id).send(f"AHHHHHHHHHHH, {alarm_time}, {current_time}, {timediff}, {timediff.total_seconds()}")
+                await self.bot.get_channel(channel_id).send(f"<@everyone> **{description}**")
                 alarms_to_be_deleted.append(i)
         for i in range(len(alarms_to_be_deleted)):
             for j in range(i, len(alarms_to_be_deleted)):

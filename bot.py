@@ -46,7 +46,7 @@ class CustomBotClient(commands.Bot):
                         (channel_id, message_id))
                 elif variant == "a":
                     self.instances["alarms"].append(
-                        (channel_id, message_id, info[3], info[4])
+                        (channel_id, message_id, info[3], info[4], info[5])
                     )
             except:
                 await message.delete()
