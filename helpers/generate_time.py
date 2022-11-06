@@ -23,14 +23,9 @@ class GenerateTimeString():
         final_string = ""
 
         for y in range(7):
-            if time_info[0] > 9:
-                for x in self.numbers[1][y]:
-                    final_string += "🟩" if x else "⬛"
-                final_string += "⬛"
-            if time_info[0] == 0:
-                for x in self.numbers[time_info[0] % 10][y]:
-                    final_string += "🟩" if x else "⬛"
-                final_string += "⬛"
+            for x in self.numbers[time_info[0] // 10][y]:
+                final_string += "🟩" if x else "⬛"
+            final_string += "⬛"
             for x in self.numbers[time_info[0] % 10][y]:
                 final_string += "🟩" if x else "⬛"
 
