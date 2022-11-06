@@ -8,13 +8,13 @@ st_run = False
 
 class ButtonHandler(discord.ui.View):
 
-    @discord.ui.button(emoji="▶️", style=discord.ButtonStyle.success)
+    @discord.ui.button(style=discord.ButtonStyle.success, emoji="<:playbutton:1038622710252699700>")
     async def button1(self, interaction: discord.Interaction, button: discord.ui.Button):
         global st_run
         st_run = True
         await interaction.response.defer()
 
-    @discord.ui.button(emoji="⏸️", style=discord.ButtonStyle.red)
+    @discord.ui.button(style=discord.ButtonStyle.red, emoji="<:pausebutton:1038624262820474900>")
     async def button2(self, interaction: discord.Interaction, button: discord.ui.Button):
         global st_run
         st_run = False
