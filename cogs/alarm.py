@@ -69,7 +69,7 @@ class Alarms(commands.Cog):
             msg_1_content += self.generator.generate_string(time_difference[1])
         await message1.edit(content=(msg_1_content))
         if time_difference[0] > 0:
-            message2 = await self.bot.get_channel(interaction.channel).send(msg_2_content)
+            message2 = await message1.channel.send(msg_2_content)
         # self.generator.generate_string(time_difference[1])
         await self.bot.get_channel(self.bot.instances_channel).send(f"s {interaction.channel_id} {message1.id} {end_time} {timezone} {description}")
         self.bot.instances["alarms"].append(
