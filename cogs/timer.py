@@ -15,8 +15,8 @@ class ButtonHandler(discord.ui.View):
     def set_ids(self, channel_id, message_id):
         self.ids = (channel_id, message_id)
     
-    @discord.ui.button(label="Resume", style=discord.ButtonStyle.primary)
-    async def button1(self, interaction: discord.Interaction, button: discord.ui.Button):
+    @discord.ui.button(style=discord.ButtonStyle.success, emoji="<:playbutton:1038622710252699700>")
+    async def start_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         try:
             self.inactive_timers[self.ids] = (self.inactive_timers[self.ids][0], self.inactive_timers[self.ids][1], dt.datetime.now())
             self.active_timers[self.ids] = self.inactive_timers[self.ids]
@@ -28,8 +28,8 @@ class ButtonHandler(discord.ui.View):
             print(self.inactive_timers)
             await interaction.response.defer()
     
-    @discord.ui.button(label="Pause", style=discord.ButtonStyle.danger)
-    async def button2(self, interaction: discord.Interaction, button: discord.ui.Button):
+    @discord.ui.button(style=discord.ButtonStyle.red, emoji="<:pausebutton:1038624262820474900>")
+    async def stop_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         try:
             self.active_timers[self.ids] = (self.active_timers[self.ids][0], self.active_timers[self.ids][1] + dt.datetime.now() - self.active_timers[self.ids][2], self.active_timers[self.ids][2])
             self.inactive_timers[self.ids] = self.active_timers[self.ids]
@@ -39,7 +39,7 @@ class ButtonHandler(discord.ui.View):
         finally:
             print(self.active_timers)
             print(self.inactive_timers)
-            await interaction.response.defer()
+            await interaction.response.defer()            
             
 class Timer(commands.Cog):       
     def __init__(self, bot: commands.Bot):
@@ -79,7 +79,13 @@ class Timer(commands.Cog):
         for key in keys:
             try:
                 message = await self.bot.get_channel(key[0]).fetch_message(key[1])
-                await message.edit(content=self.get_display_time(self.active_timers[key]))
+                if self.active_timers[key][2] + self.active_timers[key][0] - dt.datetime.now() <= dt.timedelta(0):
+                    await message.edit(content=self.generator.generate_string((0, 0, 0)))
+                    await self.bot.get_channel(key[0]).send(f"@everyone **Time's up!**")
+                    self.inactive_timers[key] = self.active_timers[key]
+                    self.active_timers.pop(key)
+                else:
+                    await message.edit(content=self.get_display_time(self.active_timers[key]))
             except:
                 try:
                     self.active_timers[key].pop()
