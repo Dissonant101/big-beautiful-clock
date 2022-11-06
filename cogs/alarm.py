@@ -19,7 +19,7 @@ from helpers.generate_time import GenerateTimeString
 # timezone = pytz.timezone("America/Vancouver")
 time_zone_choices = [
     app_commands.Choice(name="PST", value="Etc/GMT+8"),
-    app_commands.Choice(name="EST", value="Etc/GMT+4"),
+    app_commands.Choice(name="EST", value="Etc/GMT+5"),
 ]
 
 tzs = {
@@ -128,7 +128,7 @@ class Alarms(commands.Cog):
                     got_rid_of_days = await self.count_down_alarm(channel_id, message1_id, alarm_time, 32, current_time, message2_id)
                     if got_rid_of_days:
                         self.bot.instances["alarms"][i] = (
-                            channel_id, message1, end_time, tz, description, None)
+                            channel_id, message1_id, end_time, tz, description, None)
         for i in range(len(alarms_to_be_deleted)):
             for j in range(i, len(alarms_to_be_deleted)):
                 alarms_to_be_deleted[j] -= 1
@@ -144,7 +144,7 @@ class Alarms(commands.Cog):
         else:
             message1 = await self.bot.get_channel(channel_id).fetch_message(message1_id)
             message2 = await self.bot.get_channel(channel_id).fetch_message(message2_id)
-            first = message.content[:first_msg_len]
+            first = message1.content[:first_msg_len]
             time_difference = self.get_time_difference(
                 alarm_time, current_time)
             if time_difference[0] > 0:
