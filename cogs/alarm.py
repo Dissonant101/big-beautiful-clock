@@ -108,7 +108,7 @@ class Alarms(commands.Cog):
                 end_time, "%m/%d, %H:%M").replace(year=current_time.year, tzinfo=timezone)
             if self.check_time_difference(alarm_time, current_time):
                 message = await self.bot.get_channel(channel_id).fetch_message(message_id)
-                await message.edit(content=message[:32] + "\n" + self.generator.generate_string((0, 0, 0)))
+                await message.edit(content=message.content[:32] + "\n" + self.generator.generate_string((0, 0, 0)))
                 await self.bot.get_channel(channel_id).send(f"@everyone **{description}**")
                 alarms_to_be_deleted.append(i)
             else:

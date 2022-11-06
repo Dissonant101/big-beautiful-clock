@@ -18,22 +18,29 @@ class ButtonHandler(discord.ui.View):
     @discord.ui.button(label="Resume", style=discord.ButtonStyle.primary)
     async def button1(self, interaction: discord.Interaction, button: discord.ui.Button):
         try:
-            self.inactive_timers[self.ids][2] = dt.datetime.now()
-            self.active_timers[self.ids] = self.inactive_timers[self.ids].pop()
+            self.inactive_timers[self.ids] = (self.inactive_timers[self.ids][0], self.inactive_timers[self.ids][1], dt.datetime.now())
+            self.active_timers[self.ids] = self.inactive_timers[self.ids]
+            self.inactive_timers.pop(self.ids)
         except:
             pass
         finally:
+            print(self.active_timers)
+            print(self.inactive_timers)
             await interaction.response.defer()
     
     @discord.ui.button(label="Pause", style=discord.ButtonStyle.danger)
     async def button2(self, interaction: discord.Interaction, button: discord.ui.Button):
         try:
-            self.active_timers[self.ids][1] += dt.datetime.now() - self.active_timers[self.ids][2]
-            self.inactive_timers[self.ids] = self.active_timers[self.ids].pop()
+            self.active_timers[self.ids] = (self.active_timers[self.ids][0], self.active_timers[self.ids][1] + dt.datetime.now() - self.active_timers[self.ids][2], self.active_timers[self.ids][2])
+            self.inactive_timers[self.ids] = self.active_timers[self.ids]
+            self.active_timers.pop(self.ids)
         except:
             pass
         finally:
+            print(self.active_timers)
+            print(self.inactive_timers)
             await interaction.response.defer()
+            
 class Timer(commands.Cog):       
     def __init__(self, bot: commands.Bot):
         self.bot = bot
@@ -63,7 +70,7 @@ class Timer(commands.Cog):
         message = await interaction.followup.send(f"Loading timer!", view=button)
         button.set_ids(interaction.channel_id, message.id)
         key = (interaction.channel_id, message.id)
-        self.active_timers[key] = [initial_duration, elapsed_time, now]
+        self.active_timers[key] = (initial_duration, elapsed_time, now)
         await message.edit(content=self.get_display_time(self.active_timers[key]))
     
     @tasks.loop(seconds=5.0)
