@@ -54,7 +54,7 @@ class Clock(commands.Cog):
         await self.bot.get_channel(self.bot.instances_channel).send(f"c {interaction.channel_id} {message.id} {timezone}")
         self.bot.instances["clocks"].append((interaction.channel_id, message.id, timezone))
     
-    @tasks.loop(seconds=5.0)
+    @tasks.loop(seconds=2.0)
     async def update_clocks(self):
         for i in range(len(self.bot.instances["clocks"])):
             channel_id, message_id, timezone = self.bot.instances["clocks"][i]

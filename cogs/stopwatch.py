@@ -22,7 +22,8 @@ class ButtonHandler(discord.ui.View):
 
 
 class StopWatch():
-    def __init__(self) -> None:
+    def __init__(self, channel_id, message_id) -> None:
+        self.ids = (channel_id, message_id)
         self.time = [0, 0, 0]
 
     def updateTime(self, elapsedSeconds: int):
@@ -48,8 +49,8 @@ class StopWatches(commands.Cog):
     async def create_stopwatch(self, interaction: discord.Interaction):
         await interaction.response.defer()
         self.B = ButtonHandler()
-        s = StopWatch()
         message = await interaction.followup.send(f"Loading stopwatch!", view=self.B)
+        s = StopWatch(interaction.channel_id, message.id)
         
         await message.edit(content=self.generator.generate_string((s.time[0], s.time[1], s.time[2])))
         await self.bot.get_channel(self.bot.instances_channel).send(f"s {interaction.channel_id} {message.id}")
@@ -62,12 +63,18 @@ class StopWatches(commands.Cog):
             return
         for i in range(len(self.bot.instances["stopwatches"])):
             channel_id, message_id = self.bot.instances["stopwatches"][i]
-            message = await self.bot.get_channel(channel_id).fetch_message(message_id)
+            try:
+                message = await self.bot.get_channel(channel_id).fetch_message(message_id)
 
-            s = self.bot.times["stopwatches"][i]
-            s.updateTime(2)
+                s = self.bot.times["stopwatches"][i]
+                s.updateTime(2)
 
-            await message.edit(content=self.generator.generate_string((s.time[0], s.time[1], s.time[2])), view= self.B)
+                await message.edit(content=self.generator.generate_string((s.time[0], s.time[1], s.time[2])), view= self.B)
+            except:
+                self.bot.instances["stopwatches"].pop(i)
+                for j in range(len(self.bot.times["stopwatches"])):
+                    if self.bot.times["stopwatches"][j].ids == (channel_id, message_id):
+                        self.bot.times["stopwatches"].pop(j)
 
     @update_stopwatches.before_loop
     async def before_update_stopwatches(self):

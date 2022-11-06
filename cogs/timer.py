@@ -59,10 +59,10 @@ class Timer(commands.Cog):
         return self.generator.generate_string(display_time)
         
     @app_commands.command(name="create_timer", description="Creates a timer!")
-    @app_commands.describe(days="Number of days", hours="Number of hours", minutes="Number of minutes", seconds="Number of seconds")
-    async def create_timer(self, interaction: discord.Interaction, days: str, hours: str, minutes: str, seconds: str):
-        days, hours, minutes, seconds = int(days), int(hours), int(minutes), int(seconds)
-        initial_duration = dt.timedelta(days=days, hours=hours, minutes=minutes, seconds=seconds)
+    @app_commands.describe(hours="Number of hours", minutes="Number of minutes", seconds="Number of seconds")
+    async def create_timer(self, interaction: discord.Interaction, hours: str, minutes: str, seconds: str):
+        hours, minutes, seconds = int(hours), int(minutes), int(seconds)
+        initial_duration = dt.timedelta(hours=hours, minutes=minutes, seconds=seconds)
         elapsed_time = dt.timedelta()
         now = dt.datetime.now()
         await interaction.response.defer()
@@ -73,7 +73,7 @@ class Timer(commands.Cog):
         self.active_timers[key] = (initial_duration, elapsed_time, now)
         await message.edit(content=self.get_display_time(self.active_timers[key]))
     
-    @tasks.loop(seconds=5.0)
+    @tasks.loop(seconds=2.0)
     async def update_timers(self):
         keys = tuple(self.active_timers.keys())
         for key in keys:

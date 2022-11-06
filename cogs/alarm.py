@@ -119,12 +119,15 @@ class Alarms(commands.Cog):
             alarm_time = datetime.strptime(
                 end_time, "%m/%d, %H:%M").replace(year=current_time.year, tzinfo=timezone)
             if self.check_time_difference(alarm_time, current_time):
-                message1 = await self.bot.get_channel(channel_id).fetch_message(message1_id)
-                await message1.edit(content=message1.content[:32] + "\n" + self.generator.generate_string((0, 0, 0)))
-                await self.bot.get_channel(channel_id).send(f"@everyone **{description}**")
-                alarms_to_be_deleted.append(i)
+                try:
+                    message1 = await self.bot.get_channel(channel_id).fetch_message(message1_id)
+                    await message1.edit(content=message1.content[:32] + "\n" + self.generator.generate_string((0, 0, 0)))
+                    await self.bot.get_channel(channel_id).send(f"@everyone **{description}**")
+                    alarms_to_be_deleted.append(i)
+                except:
+                    alarms_to_be_deleted.append(i)
             else:
-                if self.count % 3 == 0:
+                if self.count % 2 == 0:
                     got_rid_of_days = await self.count_down_alarm(channel_id, message1_id, alarm_time, 32, current_time, message2_id)
                     if got_rid_of_days:
                         self.bot.instances["alarms"][i] = (
@@ -136,24 +139,42 @@ class Alarms(commands.Cog):
 
     async def count_down_alarm(self, channel_id: int, message1_id: int, alarm_time: datetime, first_msg_len: int, current_time: datetime, message2_id) -> bool:
         if message2_id is None:
-            message = await self.bot.get_channel(channel_id).fetch_message(message1_id)
-            first = message.content[:first_msg_len]
-            time_difference = self.get_time_difference(
-                alarm_time, current_time)
-            await message.edit(content=first + "\n" + self.generator.generate_string(time_difference[1]))
+            try:
+                message = await self.bot.get_channel(channel_id).fetch_message(message1_id)
+                first = message.content[:first_msg_len]
+                time_difference = self.get_time_difference(
+                    alarm_time, current_time)
+                await message.edit(content=first + "\n" + self.generator.generate_string(time_difference[1]))
+            except:
+                for i in range(len(self.bot.instances["alarms"])):
+                    if message1_id == self.bot.instances["alarms"][i][2]:
+                        self.bot.instances["alarms"].pop(i)
+                        break
         else:
-            message1 = await self.bot.get_channel(channel_id).fetch_message(message1_id)
-            message2 = await self.bot.get_channel(channel_id).fetch_message(message2_id)
-            first = message1.content[:first_msg_len]
-            time_difference = self.get_time_difference(
-                alarm_time, current_time)
-            if time_difference[0] > 0:
-                await message1.edit(content=first+"\n" + self.generator.generate_day_string(time_difference[0]))
-                await message2.edit(content=self.generator.generate_string(time_difference[1]))
-            else:
-                await message1.edit(content=first+"\n" + self.generator.generate_string(time_difference[1]))
-                await message2.delete()
-                return True
+            try:
+                message1 = await self.bot.get_channel(channel_id).fetch_message(message1_id)
+                message2 = await self.bot.get_channel(channel_id).fetch_message(message2_id)
+                first = message1.content[:first_msg_len]
+                time_difference = self.get_time_difference(
+                    alarm_time, current_time)
+                if time_difference[0] > 0:
+                    await message1.edit(content=first+"\n" + self.generator.generate_day_string(time_difference[0]))
+                    await message2.edit(content=self.generator.generate_string(time_difference[1]))
+                else:
+                    await message1.edit(content=first+"\n" + self.generator.generate_string(time_difference[1]))
+                    await message2.delete()
+                    return True
+            except:
+                for i in range(len(self.bot.instances["alarms"])):
+                    if message1_id == self.bot.instances["alarms"][i][2]:
+                        self.bot.instances["alarms"].pop(i)
+                        break
+                try:
+                    message2 = await self.bot.get_channel(channel_id).fetch_message(message2_id)
+                    await message2.delete()
+                except:
+                    pass
+                
         return False
 
     @check_times.before_loop
