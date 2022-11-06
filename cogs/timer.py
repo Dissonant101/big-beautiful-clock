@@ -6,29 +6,51 @@ from helpers.generate_time import GenerateTimeString
 
 
 class ButtonHandler(discord.ui.View):
+    def __init__(self, active_timers, inactive_timers):
+        super().__init__()
+        self.active_timers = active_timers
+        self.inactive_timers = inactive_timers
+        self.ids = None
+    
+    def set_ids(self, channel_id, message_id):
+        self.ids = (channel_id, message_id)
+    
     @discord.ui.button(label="Resume", style=discord.ButtonStyle.primary)
     async def button1(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.send_message(content="You clicked me!")
+        try:
+            self.inactive_timers[self.ids][2] = dt.datetime.now()
+            self.active_timers[self.ids] = self.inactive_timers[self.ids].pop()
+        except:
+            pass
+        finally:
+            await interaction.response.defer()
     
-    @discord.ui.button(label="Pause", style=discord.ButtonStyle.primary)
-    async def button1(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.send_message(content="You clicked me!")
-
-
-class Timer(commands.Cog):
+    @discord.ui.button(label="Pause", style=discord.ButtonStyle.danger)
+    async def button2(self, interaction: discord.Interaction, button: discord.ui.Button):
+        try:
+            self.active_timers[self.ids][1] += dt.datetime.now() - self.active_timers[self.ids][2]
+            self.inactive_timers[self.ids] = self.active_timers[self.ids].pop()
+        except:
+            pass
+        finally:
+            await interaction.response.defer()
+class Timer(commands.Cog):       
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.generator = GenerateTimeString()
-        self.timers = {"active": set(), "inactive": set()}
+        self.active_timers = {}
+        self.inactive_timers = {}
         self.update_timers.start()
 
     def cog_unload(self):
         self.update_timers.cancel()
         
-    def get_current_time_string(self):
-        parsed_time = self.generator.parse_time_object(dt.datetime.now())
-        return self.generator.generate_string(parsed_time)
-
+    def get_display_time(self, timer):
+        initial_duration, elapsed_time, now = timer
+        target = now + initial_duration - elapsed_time
+        display_time = self.generator.parse_delta_object(target - dt.datetime.now())
+        return self.generator.generate_string(display_time)
+        
     @app_commands.command(name="create_timer", description="Creates a timer!")
     @app_commands.describe(days="Number of days", hours="Number of hours", minutes="Number of minutes", seconds="Number of seconds")
     async def create_timer(self, interaction: discord.Interaction, days: str, hours: str, minutes: str, seconds: str):
@@ -36,24 +58,26 @@ class Timer(commands.Cog):
         initial_duration = dt.timedelta(days=days, hours=hours, minutes=minutes, seconds=seconds)
         elapsed_time = dt.timedelta()
         now = dt.datetime.now()
-        self.timers["active"].add((initial_duration, elapsed_time, now))
-        
         await interaction.response.defer()
-        message = await interaction.followup.send(f"Loading timer!", view=ButtonHandler())
-        await message.edit(content=self.get_current_time_string())
-        await self.bot.get_channel(self.bot.instances_channel).send(f"c {interaction.channel_id} {message.id}")
-        self.bot.instances["timers"].append([interaction.channel_id, message.id])
+        button = ButtonHandler(self.active_timers, self.inactive_timers)
+        message = await interaction.followup.send(f"Loading timer!", view=button)
+        button.set_ids(interaction.channel_id, message.id)
+        key = (interaction.channel_id, message.id)
+        self.active_timers[key] = [initial_duration, elapsed_time, now]
+        await message.edit(content=self.get_display_time(self.active_timers[key]))
     
     @tasks.loop(seconds=5.0)
     async def update_timers(self):
-        for i in range(len(self.bot.instances["timers"])):
-            channel_id, message_id = self.bot.instances["timers"][i]
-            
+        keys = tuple(self.active_timers.keys())
+        for key in keys:
             try:
-                message = await self.bot.get_channel(channel_id).fetch_message(message_id)
-                await message.edit(content=self.get_current_time_string())
+                message = await self.bot.get_channel(key[0]).fetch_message(key[1])
+                await message.edit(content=self.get_display_time(self.active_timers[key]))
             except:
-                self.bot.instances["timers"].pop(i)
+                try:
+                    self.active_timers[key].pop()
+                except:
+                    pass
             
     @update_timers.before_loop
     async def before_update_timers(self):

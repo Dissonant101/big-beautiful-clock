@@ -18,6 +18,9 @@ class GenerateTimeString():
 
     def parse_time_object(self, dt: datetime) -> tuple:
         return dt.hour, dt.minute, dt.second
+    
+    def parse_delta_object(self, td: timedelta) -> tuple:
+        return td.days * 24, td.seconds // 60, td.seconds % 60
 
     def generate_string(self, time_info: tuple) -> str:
         final_string = ""
