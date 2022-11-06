@@ -53,6 +53,20 @@ class Alarms(commands.Cog):
         self.bot.instances["alarms"].append(
             [interaction.channel_id, message.id, end_time, timezone])
 
+    def check_time_difference(t1: datetime, t2: datetime) -> bool:
+        if t1.month == t2. month and t1.day == t2.day:
+            hour_difference = (t1.hour - t2.hour) * 60 * 60
+            minute_difference = (t1.minute - t2.minute) * 60
+            second_difference = t1.second - t2.second
+
+            total_second_difference = hour_difference + \
+                minute_difference + second_difference
+            return total_second_difference < 0
+
+        day_difference = t1.day - t2.day
+        month_difference = (t1.month - t2.month) * 30
+        return day_difference + month_difference < 0
+
     @tasks.loop(seconds=5)  # checks if alarm time is reaching actual time
     async def check_times(self):
         alarms_to_be_deleted = []
@@ -63,7 +77,7 @@ class Alarms(commands.Cog):
             alarm_time = datetime.strptime(
                 end_time, "%m/%d, %H:%M").replace(year=current_time.year, tzinfo=timezone)
             timediff = alarm_time - current_time
-            if timediff.total_seconds() < 1:
+            if self.check_time_difference(alarm_time, current_time):
                 await self.bot.get_channel(channel_id).send(f"AHHHHHHHHHHH, {alarm_time}, {current_time}, {timediff}, {timediff.total_seconds()}")
                 alarms_to_be_deleted.append(i)
         for i in range(len(alarms_to_be_deleted)):
