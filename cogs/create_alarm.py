@@ -22,6 +22,11 @@ time_zone_choices = [
     app_commands.Choice(name="EST", value="Etc/GMT+4"),
 ]
 
+tzs = {
+    "Etc/GMT+4": "EST",
+    "Etc/GMT+8": "PST"
+}
+
 
 class Alarms(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -49,7 +54,7 @@ class Alarms(commands.Cog):
         message = await interaction.followup.send(f"Creating alarm!")
         end_time = datetime(datetime.now().year, month, day, hour, minute).replace(
             microsecond=0).strftime("%m/%d, %H:%M")
-        await message.edit(content=(f"Alarm set for: {end_time}, {timezone}"))
+        await message.edit(content=(f"Alarm set for: {end_time}, {tzs[timezone]}"))
         await self.bot.get_channel(self.bot.instances_channel).send(f"s {interaction.channel_id} {message.id} {end_time} {timezone} {description}")
         self.bot.instances["alarms"].append(
             [interaction.channel_id, message.id, end_time, timezone, description])
@@ -78,7 +83,7 @@ class Alarms(commands.Cog):
             alarm_time = datetime.strptime(
                 end_time, "%m/%d, %H:%M").replace(year=current_time.year, tzinfo=timezone)
             if self.check_time_difference(alarm_time, current_time):
-                await self.bot.get_channel(channel_id).send(f"<@everyone> **{description}**")
+                await self.bot.get_channel(channel_id).send(f"@everyone **{description}**")
                 alarms_to_be_deleted.append(i)
         for i in range(len(alarms_to_be_deleted)):
             for j in range(i, len(alarms_to_be_deleted)):
